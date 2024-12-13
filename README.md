@@ -22,7 +22,7 @@ Linja Priser er en Home Assistant-integrasjon som henter nettleiepriser fra Linj
    - Last ned eller klon dette prosjektet.
    - Kopier mappen `linja_priser` til Home Assistant sin `custom_components`-mappe. Stien skal være:
      ```
-     /config/custom_components/linja_priser
+     /custom_components/linja_priser
      ```
 
 2. **Start Home Assistant på nytt**:
