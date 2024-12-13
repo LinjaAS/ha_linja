@@ -17,7 +17,7 @@ Denne integrasjonen for Home Assistant lar deg hente, cache og vise nettleiepris
 Plasser integrasjonen i Home Assistant sitt `custom_components`-katalog:
 
 ```
-/config/custom_components/strom_priser/
+/config/custom_components/linja_priser/
     __init__.py
     sensor.py
     const.py
