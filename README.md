@@ -1,10 +1,10 @@
-# Strøm Priser Home Assistant Integrasjon
+# Netleie Priser Home Assistant Integrasjon
 
-Denne integrasjonen for Home Assistant lar deg hente, cache og vise strømpriser fra et eksternt API. Prisene inkluderer både energipriser og fastpriser, med beregning av totalpris per time.
+Denne integrasjonen for Home Assistant lar deg hente, cache og vise nettleiepriser fra et eksternt API. Prisene inkluderer både energipriser og fastpriser, med beregning av totalpris per time.
 
 ## Funksjonalitet
 
-- **Henter priser fra API:** Integrasjonen kobler til `https://test-nettleie-api.linja.no` og henter strømpriser for spesifikke "metering points".
+- **Henter priser fra API:** Integrasjonen kobler til `https://test-nettleie-api.linja.no` og henter nettleiepriser for spesifikke "metering points".
 - **Caching:** Prisene caches lokalt én gang per dag, slik at unødvendige API-kall unngås.
 - **Totalpris per time:** Beregner totalpris som inkluderer energipriser og fastpriser.
 - **Visning i Home Assistant:** Viser totalpris og relevante detaljer som attributter i Home Assistant.
@@ -31,8 +31,8 @@ For å aktivere integrasjonen, legg til følgende i `configuration.yaml`:
 
 ```yaml
 sensor:
-  - platform: strom_priser
-    name: "Nåværende strømpris"
+  - platform: linja_priser
+    name: "Nåværende nettleiepris"
 ```
 
 ### 3. Start Home Assistant
@@ -57,7 +57,7 @@ docker restart home-assistant
 Definer relevante API-innstillinger i `const.py`:
 
 ```python
-DOMAIN = "strom_priser"
+DOMAIN = "linja_priser"
 API_URL = "https://test-nettleie-api.linja.no/api/v1/GridTariff/meteringpointsgridtariffs"
 API_KEY = "din-api-nøkkel"
 METERING_POINT_ID = "707057500025054294"
@@ -66,7 +66,7 @@ METERING_POINT_ID = "707057500025054294"
 Erstatt `API_KEY` og `METERING_POINT_ID` med dine verdier.
 
 ### Caching
-Prisene caches i filen `/config/custom_components/strom_priser_cache.json`. Denne oppdateres én gang per dag.
+Prisene caches i filen `/tmp/strom_priser_cache.json`. Denne oppdateres én gang per dag.
 
 Eksempel på cache-fil:
 ```json
