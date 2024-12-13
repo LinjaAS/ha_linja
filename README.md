@@ -1,4 +1,4 @@
-# Netleie Priser Home Assistant Integrasjon
+# Nettleiepriser Home Assistant Integrasjon
 
 Denne integrasjonen for Home Assistant lar deg hente, cache og vise nettleiepriser fra et eksternt API. Prisene inkluderer både energipriser og fastpriser, med beregning av totalpris per time.
 
