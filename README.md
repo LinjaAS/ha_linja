@@ -11,32 +11,34 @@ Denne integrasjonen for Home Assistant lar deg hente, cache og vise nettleiepris
 
 ---
 
+# Linja Priser - Home Assistant Integration
+
+## Beskrivelse
+Linja Priser er en Home Assistant-integrasjon som henter nettleiepriser fra Linja sitt API og viser priser per time.
+
 ## Installasjon
 
-### 1. Oppsett av filstruktur
-Plasser integrasjonen i Home Assistant sitt `custom_components`-katalog:
+1. **Kopier filer**:
+   - Last ned eller klon dette prosjektet.
+   - Kopier mappen `linja_priser` til Home Assistant sin `custom_components`-mappe. Stien skal være:
+     ```
+     /config/custom_components/linja_priser
+     ```
 
-```
-/config/custom_components/linja_priser/
-    __init__.py
-    sensor.py
-    const.py
-    manifest.json
-```
+2. **Start Home Assistant på nytt**:
+   - Gå til **Innstillinger > System > Kontrollpanel**, og klikk på **Start på nytt**.
 
-Koden for disse filene er inkludert i dette prosjektet.
+3. **Legg til integrasjonen via brukergrensesnittet**:
+   - Gå til **Innstillinger > Enheter og tjenester**.
+   - Klikk på **Legg til integrasjon**.
+   - Søk etter **Linja Priser**, og velg integrasjonen.
 
-### 2. Legg til i `configuration.yaml`
-For å aktivere integrasjonen, legg til følgende i `configuration.yaml`:
+4. **Konfigurer API-nøkkel og målernummer**:
+   - Når du legger til integrasjonen, vil du bli bedt om å oppgi:
+     - **API-nøkkel**: Din unike nøkkel for å autentisere mot Linja sitt API.
+     - **Målernummer (Metering Point ID)**: ID-en til målepunktet ditt.
+   - Klikk **Send inn** for å fullføre oppsettet.
 
-```yaml
-sensor:
-  - platform: linja_priser
-    name: "Nåværende nettleiepris"
-```
-
-### 3. Start Home Assistant
-Etter at filene er plassert riktig og `configuration.yaml` er oppdatert, start Home Assistant på nytt:
 
 ```bash
 hass --script check_config
