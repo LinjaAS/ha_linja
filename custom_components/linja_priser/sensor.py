@@ -40,10 +40,6 @@ class LinjaPriserSensor(SensorEntity):
     def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
-        """ return {
-            "hourly_prices": self._hourly_prices,  # Legg til alle timepriser
-            **self._attributes,
-        } """
 
     def update(self):
         """Fetch new state data for the sensor."""
@@ -72,7 +68,7 @@ class LinjaPriserSensor(SensorEntity):
             self._hourly_prices = []  # Tøm listen før oppdatering
             for hour_data in data["gridTariffCollections"][0]["gridTariff"][0]["tariffPrice"]["hours"]:
                 energy_price = hour_data["energyPrice"]["total"]
-                total_price = energy_price + fixed_price_per_hour
+                total_price = round( energy_price + fixed_price_per_hour, 2 )
 
                 self._hourly_prices.append({
                     "start_time": hour_data["startTime"],
