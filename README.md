@@ -59,11 +59,7 @@ Definer relevante API-innstillinger i `const.py`:
 ```python
 DOMAIN = "linja_priser"
 API_URL = "https://test-nettleie-api.linja.no/api/v1/GridTariff/meteringpointsgridtariffs"
-API_KEY = "din-api-nøkkel"
-METERING_POINT_ID = "707057500025054294"
 ```
-
-Erstatt `API_KEY` og `METERING_POINT_ID` med dine verdier.
 
 ### Caching
 Prisene caches i filen `/tmp/strom_priser_cache.json`. Denne oppdateres én gang per dag.

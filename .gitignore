@@ -1,0 +1,7 @@
+__pycache__
+pythonenv*
+ha_env
+venv
+.venv
+.coverage
+.idea
