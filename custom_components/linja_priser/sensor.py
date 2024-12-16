@@ -3,7 +3,8 @@ from .const import DOMAIN, API_URL
 import requests
 import logging
 import json
-from datetime import datetime, timedelta
+from calendar import monthrange
+from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,14 +13,16 @@ CACHE_FILE = "/tmp/linja_priser_cache.json"
 class LinjaPriserSensor(SensorEntity):
     """Representation of a Linja Priser Sensor."""
 
-    def __init__(self, api_key, metering_point_id):
+    def __init__(self, api_key, metering_point_id, price_type):
         """Initialize the sensor."""
         self._api_key = api_key
         self._metering_point_id = metering_point_id
+        self._price_type = price_type
         self._state = None
         self._attributes = {}
         self._hourly_prices = []  # Liste for priser per time
-        self._unique_id = f"linja_priser_{metering_point_id}"  # Generer en unik ID basert på målernummer
+        #self._unique_id = f"linja_priser_{metering_point_id}"  # Generer en unik ID basert på målernummer
+        self._unique_id = f"linja_{price_type}_{metering_point_id}"
 
     @property
     def unique_id(self):
@@ -29,7 +32,7 @@ class LinjaPriserSensor(SensorEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"Linja Priser Sensor ({self._metering_point_id})"
+        return f"Linja {self._price_type} ({self._metering_point_id})"
 
     @property
     def state(self):
@@ -48,26 +51,36 @@ class LinjaPriserSensor(SensorEntity):
             return
 
         try:
+            # Finn antall dager i den nåværende måneden
             today = datetime.now()
-            days_in_month = (today.replace(day=28) + timedelta(days=4)).day
+            year = today.year
+            month = today.month
+
+            # monthrange returnerer (første ukedag, antall dager i måneden)
+            _, days_in_month = monthrange(year, month)
+
+            #print(f"Antall dager i måneden: {days_in_month}")
             fixed_price_per_hour = 0
 
             # Finn fastprisen
             for entry in data["gridTariffCollections"][0]["meteringPointsAndPriceLevels"]:
-                if entry["meteringPoints"][0]["meteringPointId"] == self._metering_point_id:
-                    fixed_price_id = entry["currentFixedPriceLevel"]["id"]
+                for metering_point in entry["meteringPoints"]:
 
-                    fixed_prices = data["gridTariffCollections"][0]["gridTariff"][0]["tariffPrice"]["priceInfo"]["fixedPrices"]
-                    for fixed_price in fixed_prices:
-                        if fixed_price["id"] == fixed_price_id:
-                            monthly_total = fixed_price["priceLevels"][0]["monthlyTotal"]
-                            fixed_price_per_hour = monthly_total / (days_in_month * 24)
-                            break
+                    if metering_point["meteringPointId"] == self._metering_point_id:
+                        fixed_price_id = metering_point["levelValue"]
+
+                        fixed_prices = data["gridTariffCollections"][0]["gridTariff"][0]["tariffPrice"]["priceInfo"]["fixedPrices"]
+                        
+                        for fixed_price in fixed_prices[0]['priceLevels']:
+                            if fixed_price["id"] == fixed_price_id:
+                                monthly_total = fixed_price["monthlyTotal"]
+                                fixed_price_per_hour = round( monthly_total / (days_in_month * 24), 2 )
+                                break
 
             # Hent priser for hele dagen
             self._hourly_prices = []  # Tøm listen før oppdatering
             for hour_data in data["gridTariffCollections"][0]["gridTariff"][0]["tariffPrice"]["hours"]:
-                energy_price = hour_data["energyPrice"]["total"]
+                energy_price = round( hour_data["energyPrice"]["total"] / 100 , 2 )
                 total_price = round( energy_price + fixed_price_per_hour, 2 )
 
                 self._hourly_prices.append({
@@ -82,11 +95,15 @@ class LinjaPriserSensor(SensorEntity):
             current_hour = datetime.now().strftime("%Y-%m-%dT%H:00:00+00:00")
             for hour in self._hourly_prices:
                 if hour["start_time"] == current_hour:
-                    self._state = hour["total_price"]
+                    if self._price_type == "energy_price":
+                        self._state = hour["energy_price"]
+                    elif self._price_type == "fixed_price_per_hour":
+                        self._state = hour["fixed_price_per_hour"]
+                    #self._state = hour["total_price"]
                     self._attributes = {
                         "energy_price": hour["energy_price"],
                         "fixed_price_per_hour": hour["fixed_price_per_hour"],
-                        "total_price": hour["total_price"],
+                        #"total_price": hour["total_price"],
                         "start_time": hour["start_time"],
                         "end_time": hour["end_time"],
                     }
@@ -136,4 +153,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up Linja Priser sensor from a config entry."""
     api_key = config_entry.data["api_key"]
     metering_point_id = config_entry.data["metering_point_id"]
-    async_add_entities([LinjaPriserSensor(api_key, metering_point_id)])
+    price_type = config_entry.data["price_type"]
+    async_add_entities([
+        LinjaPriserSensor(api_key, metering_point_id, price_type)
+    ])
