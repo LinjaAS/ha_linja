@@ -1,0 +1,15 @@
+{
+    "title": "Linja Priser",
+    "config": {
+      "step": {
+        "user": {
+          "title": "Set up Linja Priser",
+          "description": "Enter your API key and metering point ID.",
+          "data": {
+            "api_key": "API Key",
+            "metering_point_id": "Metering Point ID"
+          }
+        }
+      }
+    }
+  }

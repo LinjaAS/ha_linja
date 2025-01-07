@@ -1,0 +1,9 @@
+{
+    "name": "Linja Priser",
+    "content_in_root": false,
+    "domains": ["sensor"],
+    "country": "NO",
+    "homeassistant": "2021.1.5",
+    "render_readme": true,
+    "zip_release": true
+  }

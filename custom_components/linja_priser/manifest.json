@@ -2,11 +2,10 @@
     "domain": "linja_priser",
     "name": "Linja Priser",
     "version": "1.0.0",
-    "documentation": "https://github.com/yourrepo/linja_priser",
-    "requirements": [],
+    "documentation": "https://github.com/LinjaAS/ha_linja",
     "dependencies": [],
-    "codeowners": [
-        "@tilovlandlinja"
-    ],
+    "codeowners": ["@LinjaAS"],
+    "requirements": [],
+    "iot_class": "cloud_polling",
     "config_flow": true
-}
+  }
