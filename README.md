@@ -40,6 +40,13 @@ Linja Priser er en Home Assistant-integrasjon som henter nettleiepriser fra Linj
    - Klikk **Send inn** for å fullføre oppsettet.
 
 
+## Installation HACS
+
+1. Add this repository to HACS.
+2. Install the integration via HACS.
+3. Configure the integration via the Home Assistant UI.
+
+
 ```bash
 hass --script check_config
 hass
