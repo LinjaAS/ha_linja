@@ -8,8 +8,6 @@ from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
 
-CACHE_FILE = "/tmp/linja_priser_cache.json"
-
 class LinjaPriserSensor(SensorEntity):
     """Representation of a Linja Priser Sensor."""
 
@@ -23,6 +21,8 @@ class LinjaPriserSensor(SensorEntity):
         self._hourly_prices = []  # Liste for priser per time
         #self._unique_id = f"linja_priser_{metering_point_id}"  # Generer en unik ID basert på målernummer
         self._unique_id = f"linja_{price_type}_{metering_point_id}"
+
+        self._cachefile = f"/tmp/linja_priser_cache_{metering_point_id}.json"
 
     @property
     def unique_id(self):
@@ -115,14 +115,17 @@ class LinjaPriserSensor(SensorEntity):
     def _get_cached_or_fresh_data(self):
         today = datetime.now().date()
         cache = self._load_cache()
-        if cache and cache.get("cached_date") == str(today):
+        cached_date = f"cached_date_{self._metering_point_id}"
+        cached_prices = f"cached_prices_{self._metering_point_id}"
+
+        if cache and cache.get(cached_date) == str(today):
             _LOGGER.info("Using cached data.")
-            return cache.get("cached_prices")
+            return cache.get(cached_prices)
 
         _LOGGER.info("Fetching fresh data from API.")
         fresh_data = self._fetch_prices_from_api()
         if fresh_data:
-            self._save_cache({"cached_date": str(today), "cached_prices": fresh_data})
+            self._save_cache({cached_date: str(today), cached_prices: fresh_data})
             return fresh_data
 
     def _fetch_prices_from_api(self):
@@ -137,14 +140,14 @@ class LinjaPriserSensor(SensorEntity):
 
     def _load_cache(self):
         try:
-            with open(CACHE_FILE, "r") as f:
+            with open(self._cachefile, "r") as f:
                 return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             return None
 
     def _save_cache(self, data):
         try:
-            with open(CACHE_FILE, "w") as f:
+            with open(self._cachefile, "w") as f:
                 json.dump(data, f)
         except Exception as e:
             _LOGGER.error("Failed to save cache: %s", e)
