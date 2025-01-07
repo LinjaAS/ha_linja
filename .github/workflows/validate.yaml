@@ -21,6 +21,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install homeassistant
 
+      - name: Create configuration.yaml
+        run: |
+          echo "homeassistant:" > configuration.yaml
+          echo "  name: Home" >> configuration.yaml
+          echo "  latitude: 0.0" >> configuration.yaml
+          echo "  longitude: 0.0" >> configuration.yaml
+          echo "  elevation: 0" >> configuration.yaml
+          echo "  unit_system: metric" >> configuration.yaml
+          echo "  time_zone: UTC" >> configuration.yaml
+          echo "" >> configuration.yaml
+          echo "logger:" >> configuration.yaml
+          echo "  default: info" >> configuration.yaml
+          echo "  logs:" >> configuration.yaml
+          echo "    custom_components.linja_priser: debug" >> configuration.yaml
+          echo "" >> configuration.yaml
+          echo "sensor:" >> configuration.yaml
+          echo "  - platform: linja_priser" >> configuration.yaml
+          echo "    api_key: \"your_api_key\"" >> configuration.yaml
+          echo "    metering_point_id: \"your_metering_point_id\"" >> configuration.yaml
+          echo "    price_type: \"energy_price\"" >> configuration.yaml
+          echo "  - platform: linja_priser" >> configuration.yaml
+          echo "    api_key: \"your_api_key\"" >> configuration.yaml
+          echo "    metering_point_id: \"your_metering_point_id\"" >> configuration.yaml
+          echo "    price_type: \"fixed_price_per_hour\"" >> configuration.yaml
+
       - name: Validate configuration
         run: |
           hass --script check_config --config . --info all
